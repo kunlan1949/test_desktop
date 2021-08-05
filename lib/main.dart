@@ -7,12 +7,24 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:system_tray/system_tray.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:test_desktop/pages/download_page.dart';
+import 'package:test_desktop/pages/local_music_page.dart';
+import 'package:test_desktop/pages/music_playing_page.dart';
+import 'package:test_desktop/pages/music_sheet_page.dart';
+import 'package:test_desktop/pages/top_list_page.dart';
+import 'AnimatedButton/transition_types.dart';
 import 'HYSizeFit.dart';
 import 'Windows/app_window.dart';
 import 'Windows/widgets/window_border.dart';
 import 'Windows/widgets/window_button.dart';
 import 'Windows/widgets/window_caption.dart';
+import 'AnimatedButton/animated_but.dart';
 import 'flip/flip_num_text.dart';
+import 'fluttery_audio.dart';
+import 'model/LocalModel/menu_bar_title_model.dart';
+import 'pages/ratio_page.dart';
+import 'r.dart';
+import 'visualizer_painter.dart';
 
 void main() async {
   runApp(const MyApp());
@@ -39,11 +51,25 @@ class _MyAppState extends State<MyApp> {
   final SystemTray _systemTray = SystemTray();
   Timer? _timer;
   bool _toogleTrayIcon = true;
-
+  late Duration time;
+  int seconds = 0;
+  Timer? countdownTimer;
+  bool isEnter = false;
+  bool f = false;
+  int? selectIndex;
+  List<MenuBarTitleModel> titleList = [
+    MenuBarTitleModel("正在播放", R.assetsImgNowplaying),
+    MenuBarTitleModel("歌单", R.assetsImgMusicsheet),
+    MenuBarTitleModel("榜单", R.assetsImgToplist),
+    MenuBarTitleModel("电台", R.assetsImgRadio),
+    MenuBarTitleModel("下载", R.assetsImgDownload),
+    MenuBarTitleModel("本地", R.assetsImgLocalmusic)
+  ];
   @override
   void initState() {
     super.initState();
     initSystemTray();
+    selectIndex = 0;
   }
 
   @override
@@ -131,17 +157,27 @@ class _MyAppState extends State<MyApp> {
     return ScreenUtilInit(
         designSize: const Size(1920, 1080),
         builder: () => MaterialApp(
+          theme: ThemeData(
+              scrollbarTheme: ScrollbarThemeData(
+                  isAlwaysShown: false,
+                  trackBorderColor:MaterialStateProperty.all(Color(0xff8df8d8)),
+                  thickness: MaterialStateProperty.all(10),
+                  thumbColor: MaterialStateProperty.all(Color(0xffe1e1e1)),
+                  radius: Radius.circular(10),
+                  minThumbLength: 100)),
+
               debugShowCheckedModeBanner: false,
               home: Scaffold(
                 body: WindowBorder(
                     color: const Color(0xFF805306),
                     width: 1,
-                    child: Stack(children: [
+                    child: Stack(
+                        children: [
                       ConstrainedBox(
                         constraints: const BoxConstraints.expand(),
                         child: Image.network(
                           'https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=2496571732,442429806&fm=26&gp=0.jpg',
-                        fit: BoxFit.fill,
+                          fit: BoxFit.fill,
                         ),
                       ),
                       Center(
@@ -149,16 +185,16 @@ class _MyAppState extends State<MyApp> {
                         // 可裁切矩形
                         child: BackdropFilter(
                           // 背景过滤器
-                          filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                          filter: ImageFilter.blur(sigmaX: 45.0, sigmaY: 15.0),
                           child: Opacity(
-                            opacity: 0.5,
+                            opacity: 0.7,
                             child: Container(
                               alignment: Alignment.center,
                               height: double.infinity,
                               width: double.infinity,
                               decoration:
-                                  BoxDecoration(color: Colors.grey.shade500),
-                              child: Text(
+                                  BoxDecoration(color: Color(0xff4c4949)),
+                              child: const Text(
                                 'Janise',
                               ),
                             ),
@@ -166,30 +202,214 @@ class _MyAppState extends State<MyApp> {
                         ),
                       )),
                       Row(
-                        children: [
-                          LeftSide(),
-                          const RightSide(),
-                        ],
-                      ),
+                          children: [
+                            MouseRegion(
+                              onEnter: (event) {
+                                setState(() {
+                                  isEnter = true;
+                                });
+                              },
+                              onExit: (event) {
+                                setState(() {
+                                  isEnter = false;
+                                });
+                              },
+                              child: SizedBox(
+                                width: 130.w,
+                                child: Container(
+                                  child: Column(
+                                    children: [
+                                      // WindowTitleBarBox(
+                                      //   child: Container(
+                                      //     child: MoveWindow(),
+                                      //   ),
+                                      // ),
+                                      Expanded(
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            gradient: isEnter
+                                                ? const LinearGradient(
+                                                    begin: Alignment.topLeft,
+                                                    end: Alignment.bottomRight,
+                                                    colors: [
+                                                      Color(0x52B4B6B4),
+                                                      Color(0x23B4B6B4),
+                                                    ],
+                                                  )
+                                                : const LinearGradient(
+                                                    begin: Alignment.topLeft,
+                                                    end: Alignment.bottomRight,
+                                                    colors: [
+                                                      Color(0x52646665),
+                                                      Color(0x207D7D7D),
+                                                    ],
+                                                  ),
+                                          ),
+                                          child: Column(
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 35.0),
+                                                child: ListView.builder(
+                                                  shrinkWrap: true,
+                                                  physics: NeverScrollableScrollPhysics(),
+                                                  itemBuilder: (context, index) {
+                                                    return _fileItemBuilder(
+                                                        index);
+                                                  },
+                                                  itemCount: titleList.length,
+                                                ),
+                                              )
+                                              //FlipNumText(seconds, 10),
+                                            ],
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                                child: ListView(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  children: [
+                                    WindowTitleBarBox(
+                                      child: Container(
+                                        child: Row(
+                                          children: [
+                                            Expanded(
+                                              child: MoveWindow(),
+                                            ),
+                                            const WindowButtons()
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+
+                                    Container(
+                                      height: 1200.h,
+                                        child:  mainPageView(selectIndex!)),
+
+                                  ],
+
+                              ),
+                            )
+                          ],
+                        ),
+
                     ])),
               ),
             ));
   }
-}
 
-class LeftSide extends StatefulWidget {
-  LeftSide({Key? key}) : super(key: key);
-
-  @override
-  _LeftSideState createState() {
-    return _LeftSideState();
+  Widget _fileItemBuilder(int index) {
+    return GestureDetector(
+      onTapDown: (e) {
+        setState(() {
+          selectIndex = index;
+        });
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          child: Column(
+            children: [
+              ImageIcon(
+                AssetImage(titleList[index].iconPath!),
+                size: selectIndex == index ? 50.r : 30.r,
+                color: selectIndex == index
+                    ? Color(0xCD53D4FF)
+                    : Color(0xC8303132),
+              ),
+              Container(
+                child: Text(
+                  titleList[index].title!,
+                  style: TextStyle(
+                    color: selectIndex == index
+                        ? Color(0xCD53D4FF)
+                        : Color(0x6A71B2C4),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
-class _LeftSideState extends State<LeftSide> {
-  late Duration time;
-  int seconds = 0;
-  Timer? countdownTimer;
+// class LeftSide extends StatefulWidget {
+//   int? position;
+//   LeftSide(position, {Key? key}) : super(key: key);
+//
+//   @override
+//   _LeftSideState createState() {
+//     return _LeftSideState();
+//   }
+// }
+//
+// class _LeftSideState extends State<LeftSide> {
+//
+//
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//   }
+//
+//   @override
+//   void dispose() {
+//     super.dispose();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     // TODO: implement build
+//     return ;
+//   }
+//
+//
+// }
+
+Widget mainPageView(int selectedIndex) {
+  Widget? mainPage;
+  switch (selectedIndex) {
+    case 0:
+      mainPage = MusicPlayingPage();
+      break;
+    case 1:
+      mainPage =  MusicSheetPage();
+      break;
+    case 2:
+      mainPage = TopListPage();
+      //NotifictionPage();
+      break;
+    case 3:
+      mainPage = RadioPage();
+      break;
+    case 4:
+      mainPage = DownLoadPage();
+      break;
+    case 5:
+      mainPage = LocalMusicPage();
+      break;
+  }
+  return mainPage!;
+}
+
+class RightSide extends StatefulWidget {
+  RightSide({Key? key}) : super(key: key);
+
+  @override
+  _RightSideState createState() {
+    return _RightSideState();
+  }
+}
+
+class _RightSideState extends State<RightSide> {
   @override
   void initState() {
     super.initState();
@@ -203,66 +423,9 @@ class _LeftSideState extends State<LeftSide> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return SizedBox(
-      width: 200,
-      child: Container(
-        child: Column(
-          children: [
-            WindowTitleBarBox(
-              child: Container(
-                child: MoveWindow(),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                child: Column(
-                  children: [
-                    RaisedButton(
-                      child: Text("开始"),
-                      onPressed: () {
-                        setState(() {
-                          seconds = 10;
-                        });
-                        countdownTimer =
-                            Timer.periodic(const Duration(seconds: 1), (timer) {
-                          if (seconds > 0) {
-                            setState(() {
-                              seconds--;
-                            });
-                          } else {
-                            countdownTimer!.cancel();
-                            countdownTimer = null;
-                          }
-                        });
-                      },
-                    ),
-                    Text(
-                      seconds.toString(),
-                      style: const TextStyle(
-                        fontSize: 40,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    )
-                    //FlipNumText(seconds, 10),
-                  ],
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class RightSide extends StatelessWidget {
-  const RightSide({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        child: Column(
+        child: Stack(
           children: [
             WindowTitleBarBox(
               child: Container(
@@ -276,6 +439,25 @@ class RightSide extends StatelessWidget {
                 ),
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Flexible(fit: FlexFit.loose, child: mainPageView(0)),
+            ),
+            // Container(
+            //   width: double.infinity,
+            //   height: 125.0,
+            //   child:  Visualizer(
+            //       builder: (BuildContext context, List<int> fft) {
+            //         return  CustomPaint(
+            //           painter:  VisualizerPainter(
+            //             fft: fft,
+            //             height: 125.0,
+            //             color: Colors.red,
+            //           ),
+            //           child: new Container(),
+            //         );
+            //       }),
+            // ),
           ],
         ),
       ),

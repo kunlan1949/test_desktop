@@ -48,6 +48,12 @@ dev_dependencies:
   bitsdojo_window: ^0.1.1+1
   system_tray: ^0.0.7
   flutter_screenutil: ^5.0.0+2
+  logging: ^1.0.1
+  convert: ^3.0.1
+  dio: ^4.0.0
+  flutter_easyloading: ^3.0.0
+  crypto: ^3.0.1
+#  flutter_animated_button: ^2.0.0
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -63,7 +69,16 @@ flutter:
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
-
+  assets:
+  # assets-generator-begin
+  # assets/img/*
+    - assets/img/download.png
+    - assets/img/localmusic.png
+    - assets/img/musicsheet.png
+    - assets/img/nowplaying.png
+    - assets/img/radio.png
+    - assets/img/toplist.png
+  # assets-generator-end
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 
