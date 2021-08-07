@@ -82,7 +82,7 @@ class _MusicSheetPageState extends State<MusicSheetPage> {
     if (snapshot.hasData) {
       PersonalSongSheet? list = snapshot.data;
       SongSheetWidget =  Container(
-        height: 980.h,
+        height: 780.h,
         child: GridView.builder(
           shrinkWrap: true,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -106,14 +106,12 @@ class _MusicSheetPageState extends State<MusicSheetPage> {
               //对Widget截取的行为，比如这里 Clip.antiAlias 指抗锯齿
               clipBehavior: Clip.antiAlias,
               semanticContainer: false,
-              child:Column(
-                children: [Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Image.network(list.result![index].picUrl! ,fit: BoxFit.fill,),
-                    Positioned(child: Text(list.result![index].copywriter!,maxLines: 2,overflow: TextOverflow.fade,),bottom: 0,)
-                  ],
-                ),],
+              child:Stack(
+                alignment: Alignment.center,
+                children: [
+                  Image.network(list.result![index].picUrl! ,fit: BoxFit.fill,),
+                  Positioned(child: Text(list.result![index].copywriter!,maxLines: 2,overflow: TextOverflow.fade,),bottom: 0,)
+                ],
               )
             );
           },

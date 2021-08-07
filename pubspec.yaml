@@ -53,6 +53,8 @@ dev_dependencies:
   dio: ^4.0.0
   flutter_easyloading: ^3.0.0
   crypto: ^3.0.1
+  flutter_hooks: ^0.18.0
+  navigation_history_observer: ^1.1.0
 #  flutter_animated_button: ^2.0.0
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -72,12 +74,32 @@ flutter:
   assets:
   # assets-generator-begin
   # assets/img/*
+    - assets/img/back.png
+    - assets/img/choose.png
+    - assets/img/dislike.png
     - assets/img/download.png
+    - assets/img/downloads.png
+    - assets/img/fullscreen.png
+    - assets/img/like.png
+    - assets/img/list_loop.png
     - assets/img/localmusic.png
+    - assets/img/lyric.png
+    - assets/img/menu.png
     - assets/img/musicsheet.png
+    - assets/img/mute.png
+    - assets/img/netcloud.png
+    - assets/img/next.png
     - assets/img/nowplaying.png
+    - assets/img/ok.png
+    - assets/img/pause.png
+    - assets/img/play.png
     - assets/img/radio.png
+    - assets/img/random_loop.png
+    - assets/img/setting.png
+    - assets/img/single_loop.png
+    - assets/img/sound.png
     - assets/img/toplist.png
+    - assets/img/warning.png
   # assets-generator-end
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

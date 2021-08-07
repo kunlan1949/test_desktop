@@ -9,6 +9,7 @@ import 'package:system_tray/system_tray.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:test_desktop/pages/download_page.dart';
 import 'package:test_desktop/pages/local_music_page.dart';
+import 'package:test_desktop/pages/main_page.dart';
 import 'package:test_desktop/pages/music_playing_page.dart';
 import 'package:test_desktop/pages/music_sheet_page.dart';
 import 'package:test_desktop/pages/top_list_page.dart';
@@ -32,8 +33,8 @@ void main() async {
   doWhenWindowReady(() {
     final win = appWindow;
     // const initialSize = Size(1225.w, 750.h);
-    win.minSize = Size(1600.w, 900.h);
-    win.size = Size(1600.w, 900.h);
+    win.minSize = Size(1600.w, 1000.h);
+    win.size = Size(1600.w, 1000.h);
     win.alignment = Alignment.center;
     win.title = "How to use system tray with Flutter";
     win.show();
@@ -51,25 +52,11 @@ class _MyAppState extends State<MyApp> {
   final SystemTray _systemTray = SystemTray();
   Timer? _timer;
   bool _toogleTrayIcon = true;
-  late Duration time;
-  int seconds = 0;
-  Timer? countdownTimer;
-  bool isEnter = false;
-  bool f = false;
-  int? selectIndex;
-  List<MenuBarTitleModel> titleList = [
-    MenuBarTitleModel("正在播放", R.assetsImgNowplaying),
-    MenuBarTitleModel("歌单", R.assetsImgMusicsheet),
-    MenuBarTitleModel("榜单", R.assetsImgToplist),
-    MenuBarTitleModel("电台", R.assetsImgRadio),
-    MenuBarTitleModel("下载", R.assetsImgDownload),
-    MenuBarTitleModel("本地", R.assetsImgLocalmusic)
-  ];
+
   @override
   void initState() {
     super.initState();
     initSystemTray();
-    selectIndex = 0;
   }
 
   @override
@@ -167,178 +154,11 @@ class _MyAppState extends State<MyApp> {
                   minThumbLength: 100)),
 
               debugShowCheckedModeBanner: false,
-              home: Scaffold(
-                body: WindowBorder(
-                    color: const Color(0xFF805306),
-                    width: 1,
-                    child: Stack(
-                        children: [
-                      ConstrainedBox(
-                        constraints: const BoxConstraints.expand(),
-                        child: Image.network(
-                          'https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=2496571732,442429806&fm=26&gp=0.jpg',
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                      Center(
-                          child: ClipRect(
-                        // 可裁切矩形
-                        child: BackdropFilter(
-                          // 背景过滤器
-                          filter: ImageFilter.blur(sigmaX: 45.0, sigmaY: 15.0),
-                          child: Opacity(
-                            opacity: 0.7,
-                            child: Container(
-                              alignment: Alignment.center,
-                              height: double.infinity,
-                              width: double.infinity,
-                              decoration:
-                                  BoxDecoration(color: Color(0xff4c4949)),
-                              child: const Text(
-                                'Janise',
-                              ),
-                            ),
-                          ),
-                        ),
-                      )),
-                      Row(
-                          children: [
-                            MouseRegion(
-                              onEnter: (event) {
-                                setState(() {
-                                  isEnter = true;
-                                });
-                              },
-                              onExit: (event) {
-                                setState(() {
-                                  isEnter = false;
-                                });
-                              },
-                              child: SizedBox(
-                                width: 130.w,
-                                child: Container(
-                                  child: Column(
-                                    children: [
-                                      // WindowTitleBarBox(
-                                      //   child: Container(
-                                      //     child: MoveWindow(),
-                                      //   ),
-                                      // ),
-                                      Expanded(
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            gradient: isEnter
-                                                ? const LinearGradient(
-                                                    begin: Alignment.topLeft,
-                                                    end: Alignment.bottomRight,
-                                                    colors: [
-                                                      Color(0x52B4B6B4),
-                                                      Color(0x23B4B6B4),
-                                                    ],
-                                                  )
-                                                : const LinearGradient(
-                                                    begin: Alignment.topLeft,
-                                                    end: Alignment.bottomRight,
-                                                    colors: [
-                                                      Color(0x52646665),
-                                                      Color(0x207D7D7D),
-                                                    ],
-                                                  ),
-                                          ),
-                                          child: Column(
-                                            children: [
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 35.0),
-                                                child: ListView.builder(
-                                                  shrinkWrap: true,
-                                                  physics: NeverScrollableScrollPhysics(),
-                                                  itemBuilder: (context, index) {
-                                                    return _fileItemBuilder(
-                                                        index);
-                                                  },
-                                                  itemCount: titleList.length,
-                                                ),
-                                              )
-                                              //FlipNumText(seconds, 10),
-                                            ],
-                                          ),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                                child: ListView(
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  children: [
-                                    WindowTitleBarBox(
-                                      child: Container(
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              child: MoveWindow(),
-                                            ),
-                                            const WindowButtons()
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-
-                                    Container(
-                                      height: 1200.h,
-                                        child:  mainPageView(selectIndex!)),
-
-                                  ],
-
-                              ),
-                            )
-                          ],
-                        ),
-
-                    ])),
-              ),
+              home: MainPage()
             ));
   }
 
-  Widget _fileItemBuilder(int index) {
-    return GestureDetector(
-      onTapDown: (e) {
-        setState(() {
-          selectIndex = index;
-        });
-      },
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Container(
-          child: Column(
-            children: [
-              ImageIcon(
-                AssetImage(titleList[index].iconPath!),
-                size: selectIndex == index ? 50.r : 30.r,
-                color: selectIndex == index
-                    ? Color(0xCD53D4FF)
-                    : Color(0xC8303132),
-              ),
-              Container(
-                child: Text(
-                  titleList[index].title!,
-                  style: TextStyle(
-                    color: selectIndex == index
-                        ? Color(0xCD53D4FF)
-                        : Color(0x6A71B2C4),
-                  ),
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+
 }
 
 // class LeftSide extends StatefulWidget {
@@ -400,98 +220,5 @@ Widget mainPageView(int selectedIndex) {
   return mainPage!;
 }
 
-class RightSide extends StatefulWidget {
-  RightSide({Key? key}) : super(key: key);
 
-  @override
-  _RightSideState createState() {
-    return _RightSideState();
-  }
-}
 
-class _RightSideState extends State<RightSide> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    return Expanded(
-      child: Container(
-        child: Stack(
-          children: [
-            WindowTitleBarBox(
-              child: Container(
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: MoveWindow(),
-                    ),
-                    const WindowButtons()
-                  ],
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Flexible(fit: FlexFit.loose, child: mainPageView(0)),
-            ),
-            // Container(
-            //   width: double.infinity,
-            //   height: 125.0,
-            //   child:  Visualizer(
-            //       builder: (BuildContext context, List<int> fft) {
-            //         return  CustomPaint(
-            //           painter:  VisualizerPainter(
-            //             fft: fft,
-            //             height: 125.0,
-            //             color: Colors.red,
-            //           ),
-            //           child: new Container(),
-            //         );
-            //       }),
-            // ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-final buttonColors = WindowButtonColors(
-    iconNormal: const Color(0xFF805306),
-    mouseOver: const Color(0xFFF6A00C),
-    mouseDown: const Color(0xFF805306),
-    iconMouseOver: const Color(0xFF805306),
-    iconMouseDown: const Color(0xFFFFD500));
-
-final closeButtonColors = WindowButtonColors(
-    mouseOver: const Color(0xFFD32F2F),
-    mouseDown: const Color(0xFFB71C1C),
-    iconNormal: const Color(0xFF805306),
-    iconMouseOver: Colors.white);
-
-class WindowButtons extends StatelessWidget {
-  const WindowButtons({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        MinimizeWindowButton(colors: buttonColors),
-        MaximizeWindowButton(colors: buttonColors),
-        HideWindowButton(
-          colors: closeButtonColors,
-        )
-        //CloseWindowButton(colors: closeButtonColors),
-      ],
-    );
-  }
-}
