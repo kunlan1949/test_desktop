@@ -220,105 +220,108 @@ class _MainPageState extends State<MainPage> {
                 ],
               ),
             ),
-            Row(
-              children: [
-                MouseRegion(
-                  onEnter: (event) {
-                    setState(() {
-                      isEnter = true;
-                    });
-                  },
-                  onExit: (event) {
-                    setState(() {
-                      isEnter = false;
-                    });
-                  },
-                  child: SizedBox(
-                    width: 130.w,
-                    child: Container(
-                      child: Column(
-                        children: [
-                          // WindowTitleBarBox(
-                          //   child: Container(
-                          //     child: MoveWindow(),
-                          //   ),
-                          // ),
-                          Expanded(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                gradient: isEnter
-                                    ? const LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                        colors: [
-                                          Color(0x52B4B6B4),
-                                          Color(0x23B4B6B4),
-                                        ],
-                                      )
-                                    : const LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                        colors: [
-                                          Color(0x52646665),
-                                          Color(0x207D7D7D),
-                                        ],
+            Padding(
+              padding:EdgeInsets.only(bottom: 120.0.h),
+              child: Row(
+                children: [
+                  MouseRegion(
+                    onEnter: (event) {
+                      setState(() {
+                        isEnter = true;
+                      });
+                    },
+                    onExit: (event) {
+                      setState(() {
+                        isEnter = false;
+                      });
+                    },
+                    child: SizedBox(
+                      width: 130.w,
+                      child: Container(
+                        child: Column(
+                          children: [
+                            // WindowTitleBarBox(
+                            //   child: Container(
+                            //     child: MoveWindow(),
+                            //   ),
+                            // ),
+                            Expanded(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: isEnter
+                                      ? const LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          colors: [
+                                            Color(0x52B4B6B4),
+                                            Color(0x23B4B6B4),
+                                          ],
+                                        )
+                                      : const LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          colors: [
+                                            Color(0x52646665),
+                                            Color(0x207D7D7D),
+                                          ],
+                                        ),
+                                ),
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 35.0),
+                                      child: ListView.builder(
+                                        shrinkWrap: true,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        itemBuilder: (context, index) {
+                                          return _fileItemBuilder(
+                                              navigatorKey, index);
+                                        },
+                                        itemCount: titleList.length,
                                       ),
+                                    )
+                                    //FlipNumText(seconds, 10),
+                                  ],
+                                ),
                               ),
-                              child: Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 35.0),
-                                    child: ListView.builder(
-                                      shrinkWrap: true,
-                                      physics: NeverScrollableScrollPhysics(),
-                                      itemBuilder: (context, index) {
-                                        return _fileItemBuilder(
-                                            navigatorKey, index);
-                                      },
-                                      itemCount: titleList.length,
-                                    ),
-                                  )
-                                  //FlipNumText(seconds, 10),
-                                ],
-                              ),
-                            ),
-                          )
-                        ],
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Expanded(
-                  child: ListView(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 18.0, right: 8),
-                        child: Container(
-                          height: 900.h,
-                          child: Navigator(
-                            key: navigatorKey,
-                            observers: [NavigationHistoryObserver()],
-                            initialRoute: Page.mpp.route,
-                            onGenerateRoute: (settings) {
-                              final pageName = settings.name;
+                  Expanded(
+                    child: ListView(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 18.0, right: 8),
+                          child: Container(
+                            height: 900.h,
+                            child: Navigator(
+                              key: navigatorKey,
+                              observers: [NavigationHistoryObserver()],
+                              initialRoute: Page.mpp.route,
+                              onGenerateRoute: (settings) {
+                                final pageName = settings.name;
 
-                              final page = _fragments.keys.firstWhere(
-                                  (element) =>
-                                      describeEnum(element) == pageName);
+                                final page = _fragments.keys.firstWhere(
+                                    (element) =>
+                                        describeEnum(element) == pageName);
 
-                              return MaterialPageRoute(
-                                  settings: settings,
-                                  builder: (context) => _fragments[page]!);
-                            },
+                                return MaterialPageRoute(
+                                    settings: settings,
+                                    builder: (context) => _fragments[page]!);
+                              },
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                )
-              ],
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
             Align(
               alignment: Alignment.bottomCenter,
